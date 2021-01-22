@@ -21,8 +21,18 @@ const users = [
     {"id" : 12, "name" : "name 12"}
 ]
 
-app.get("/users",(req,res) => {
+app.get("/users",paginated(users),(req,res) => {
+   
+   res.send(res.paginatedResults);
+})
 
+app.listen(PORT,()=> {
+    console.log(`Listening to PORT number : ${PORT}`);
+})
+
+
+function paginated(user){
+    return(req,res,next)=> {
     let pageNumber = parseInt(req.query.page);
     let limit = parseInt(req.query.limit);
 
@@ -60,9 +70,7 @@ app.get("/users",(req,res) => {
     // Get the result between the start and End Index
     results.result = users.slice(startIndex,endIndex);
 
-    res.send(results);
-})
-
-app.listen(PORT,()=> {
-    console.log(`Listening to PORT number : ${PORT}`);
-})
+    res.paginatedResults = results;
+    next();
+    }
+}
