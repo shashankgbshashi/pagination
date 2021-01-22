@@ -22,7 +22,45 @@ const users = [
 ]
 
 app.get("/users",(req,res) => {
-    res.send(users);
+
+    let pageNumber = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
+
+    //Get the startIndex of the user to be displayed
+    // and the lastIndex of the user
+
+    let startIndex = (pageNumber-1)*limit;
+    let endIndex = startIndex + limit;
+    //console.log(endIndex);
+
+    let results = {};
+
+
+    /*
+     if You are using database the endIndex mustBe less 
+     then await user.countDocument().exec(); 
+
+    */
+
+    if(startIndex> 0){
+        results.previous = {
+            pageNumber : pageNumber-1,
+            limit : limit
+        }
+    };
+
+    if(endIndex <  users.length){
+        results.next = {
+            pageNumber : pageNumber+1,
+            limit : limit
+        }
+    };
+
+
+    // Get the result between the start and End Index
+    results.result = users.slice(startIndex,endIndex);
+
+    res.send(results);
 })
 
 app.listen(PORT,()=> {
